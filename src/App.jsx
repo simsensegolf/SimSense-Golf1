@@ -10,7 +10,24 @@ export default function App() {
     carryDistance: '218'
   });
 
+  const [submittedForm, setSubmittedForm] = useState({
+    clubSpeed: '92',
+    ballSpeed: '128',
+    launchAngle: '8.5',
+    spinRate: '3600',
+    attackAngle: '-3.0',
+    carryDistance: '218'
+  });
+
   const [equipmentForm, setEquipmentForm] = useState({
+    driverBrand: 'TaylorMade',
+    shaftModel: 'Fujikura Ventus Blue',
+    shaftStiffness: 'Regular',
+    shaftWeight: '55',
+    gripSize: 'Standard'
+  });
+
+  const [submittedEquipmentForm, setSubmittedEquipmentForm] = useState({
     driverBrand: 'TaylorMade',
     shaftModel: 'Fujikura Ventus Blue',
     shaftStiffness: 'Regular',
@@ -53,18 +70,26 @@ export default function App() {
     setWaitlist({ name: '', email: '' });
   };
 
+  const handleAnalyze = () => {
+    setSubmittedForm({ ...form });
+    setSubmittedEquipmentForm({ ...equipmentForm });
+    setTimeout(() => {
+      scrollToId('results-top');
+    }, 50);
+  };
+
   const analysis = useMemo(() => {
-    const clubSpeed = number(form.clubSpeed);
-    const ballSpeed = number(form.ballSpeed);
-    const launchAngle = number(form.launchAngle);
-    const spinRate = number(form.spinRate);
-    const attackAngle = number(form.attackAngle);
-    const carryDistance = number(form.carryDistance);
-    const shaftWeight = number(equipmentForm.shaftWeight);
-    const shaftStiffness = equipmentForm.shaftStiffness;
-    const gripSize = equipmentForm.gripSize;
-    const driverBrand = equipmentForm.driverBrand.trim();
-    const shaftModel = equipmentForm.shaftModel.trim();
+    const clubSpeed = number(submittedForm.clubSpeed);
+    const ballSpeed = number(submittedForm.ballSpeed);
+    const launchAngle = number(submittedForm.launchAngle);
+    const spinRate = number(submittedForm.spinRate);
+    const attackAngle = number(submittedForm.attackAngle);
+    const carryDistance = number(submittedForm.carryDistance);
+    const shaftWeight = number(submittedEquipmentForm.shaftWeight);
+    const shaftStiffness = submittedEquipmentForm.shaftStiffness;
+    const gripSize = submittedEquipmentForm.gripSize;
+    const driverBrand = submittedEquipmentForm.driverBrand.trim();
+    const shaftModel = submittedEquipmentForm.shaftModel.trim();
     const smashValue = clubSpeed > 0 ? ballSpeed / clubSpeed : 0;
     const smash = smashValue.toFixed(2);
 
@@ -260,7 +285,7 @@ export default function App() {
       metricsSummary,
       equipmentSummary
     };
-  }, [form, equipmentForm]);
+  }, [submittedForm, submittedEquipmentForm]);
 
   const metrics = [
     { label: 'Club Speed', key: 'clubSpeed', unit: 'mph', help: 'How fast the driver is moving at impact.' },
@@ -384,7 +409,7 @@ export default function App() {
               <div className="section-row">
                 <div>
                   <h3>Enter driver numbers</h3>
-                  <div className="muted">This version is built for driver only.</div>
+                  <div className="muted">This version is built for driver only. Results update when you click Analyze Driver Numbers.</div>
                 </div>
               </div>
 
@@ -462,7 +487,7 @@ export default function App() {
                   <div className="muted-light">Quick read</div>
                   <div className="summary-value">Driver efficiency: {analysis.smash}</div>
                 </div>
-                <button className="button button-light" onClick={() => scrollToId('results-top')}>Analyze Driver Numbers</button>
+                <button className="button button-light" onClick={handleAnalyze}>Analyze Driver Numbers</button>
               </div>
             </div>
           </div>
@@ -588,7 +613,7 @@ export default function App() {
                   'Driver-only logic for a cleaner MVP',
                   'Low / good / high feedback on key metrics',
                   'Current shaft and grip setup included in the analysis',
-                  'Action plan, training ideas, and fit suggestions'
+                  'Analyze button now triggers the result set'
                 ].map((item) => (
                   <div key={item} className="check-row">
                     <span className="check">✓</span>

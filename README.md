@@ -8,6 +8,7 @@ This version includes:
 - driver-only analyzer
 - current driver setup inputs
 - shaft stiffness, shaft weight, and grip size context
+- analyze button now triggers the result set
 - green-branded design update
 - logo in header and browser tab
 - waitlist section and demo form
