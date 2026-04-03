@@ -2,18 +2,14 @@
 
 Web app that turns golf simulator numbers into simple explanations, swing insights, and improvement recommendations.
 
-## What this project does
+## Current version
 
-SimSense Golf helps golfers:
-- understand simulator and launch monitor numbers in plain English
-- identify likely swing issues
-- get training and drill recommendations
-- see when equipment changes may be worth considering
-
-## Tech stack
-
-- React
-- Vite
+This version includes:
+- green-branded design update
+- logo added to header and browser tab
+- Try the MVP Demo button scroll
+- Upload Simulator Numbers message
+- Join Waitlist section and demo form
 
 ## Run locally
 
@@ -22,28 +18,13 @@ npm install
 npm run dev
 ```
 
-## Build
+## Deploy updates
 
-```bash
-npm run build
-```
+Push changes to GitHub and Vercel should redeploy automatically.
 
-## Deploy for free
+## Real waitlist collection
 
-### GitHub
-1. Create a repo named `simsense-golf`
-2. Upload these files
-
-### Vercel
-1. Sign in to Vercel
-2. Click **Add New Project**
-3. Import your GitHub repo
-4. Click **Deploy**
-
-## Suggested next upgrades
-
-- add a logo and brand colors
-- add real training video links
-- create a waitlist form
-- add screenshot upload for simulator reports
-- save sessions to a database
+To collect real emails, connect the waitlist form to:
+- Formspree
+- Tally
+- Google Forms

@@ -10,9 +10,42 @@ export default function App() {
     carryDistance: '218'
   });
 
+  const [waitlist, setWaitlist] = useState({
+    name: '',
+    email: ''
+  });
+
+  const [uploadMessage, setUploadMessage] = useState('');
+
   const number = (value) => {
     const parsed = parseFloat(value);
     return Number.isFinite(parsed) ? parsed : 0;
+  };
+
+  const scrollToId = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const handleUploadClick = () => {
+    setUploadMessage('Screenshot upload is coming soon. For now, golfers can manually enter their simulator numbers below.');
+    setTimeout(() => setUploadMessage(''), 5000);
+  };
+
+  const handleWaitlistSubmit = (event) => {
+    event.preventDefault();
+    if (!waitlist.name.trim() || !waitlist.email.trim()) {
+      alert('Please enter your name and email.');
+      return;
+    }
+
+    alert(
+      'Waitlist form demo saved. To collect real emails, connect this form to Formspree, Tally, or Google Forms.'
+    );
+
+    setWaitlist({ name: '', email: '' });
   };
 
   const analysis = useMemo(() => {
@@ -119,17 +152,17 @@ export default function App() {
       <header className="site-header">
         <div className="container topbar">
           <div className="brand">
-            <div className="brand-mark">SG</div>
+            <img className="brand-logo" src="/simsense-logo.png" alt="SimSense Golf logo" />
             <div>
               <div className="brand-name">SimSense Golf</div>
               <div className="brand-tag">Make sense of your golf numbers</div>
             </div>
           </div>
           <nav className="nav">
-            <a href="#how-it-works">How it works</a>
-            <a href="#mvp">MVP Demo</a>
-            <a href="#features">Features</a>
-            <button className="button button-dark">Join Waitlist</button>
+            <button className="nav-link" onClick={() => scrollToId('how-it-works')}>How it works</button>
+            <button className="nav-link" onClick={() => scrollToId('mvp')}>MVP Demo</button>
+            <button className="nav-link" onClick={() => scrollToId('features')}>Features</button>
+            <button className="button button-green" onClick={() => scrollToId('waitlist')}>Join Waitlist</button>
           </nav>
         </div>
       </header>
@@ -145,9 +178,10 @@ export default function App() {
               changes might actually help.
             </p>
             <div className="button-row">
-              <button className="button button-dark">Try the MVP Demo</button>
-              <button className="button button-light">Upload Simulator Numbers</button>
+              <button className="button button-green" onClick={() => scrollToId('mvp')}>Try the MVP Demo</button>
+              <button className="button button-light" onClick={handleUploadClick}>Upload Simulator Numbers</button>
             </div>
+            {uploadMessage ? <div className="notice">{uploadMessage}</div> : null}
             <div className="stat-grid">
               <StatCard value="Plain English" label="Explain every metric" />
               <StatCard value="Drills & videos" label="Recommended next steps" />
@@ -155,7 +189,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="card">
+          <div className="card hero-card">
             <div className="card-head">
               <div>
                 <div className="muted">Sample session</div>
@@ -184,7 +218,7 @@ export default function App() {
                 <div className="panel-title">Likely swing issue</div>
                 <div className="small-text">Hitting down on the driver and missing center-face contact.</div>
               </div>
-              <div className="panel panel-blue">
+              <div className="panel panel-green-soft">
                 <div className="panel-title">Recommended next step</div>
                 <div className="small-text">Watch the “Hit Up on the Driver” and “Center-Face Contact” training videos.</div>
               </div>
@@ -232,11 +266,11 @@ export default function App() {
                 <div className="muted-light">Quick indicator</div>
                 <div className="summary-value">Smash Factor: {analysis.smash}</div>
               </div>
-              <button className="button button-light">Analyze My Numbers</button>
+              <button className="button button-light" onClick={() => scrollToId('results-top')}>Analyze My Numbers</button>
             </div>
           </div>
 
-          <div className="stack">
+          <div className="stack" id="results-top">
             <div className="card">
               <h3>What your numbers are saying</h3>
               <div className="stack-sm">
@@ -279,7 +313,7 @@ export default function App() {
         </div>
       </section>
 
-      <section id="features" className="container section bottom-pad">
+      <section id="features" className="container section">
         <div className="card">
           <div className="app-grid">
             <div>
@@ -310,6 +344,38 @@ export default function App() {
               <FeatureTile title="Coach library" text="Use your own in-house videos and training content." />
               <FeatureTile title="Fitter mode" text="Give smart club suggestions without overselling gear." />
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="waitlist" className="container section bottom-pad">
+        <div className="waitlist-card">
+          <div>
+            <div className="eyebrow">Waitlist</div>
+            <h2>Stay updated on SimSense Golf</h2>
+            <p className="hero-copy compact">
+              Get updates as new features go live, including screenshot upload, saved sessions, and smarter video recommendations.
+            </p>
+          </div>
+
+          <form className="waitlist-form" onSubmit={handleWaitlistSubmit}>
+            <input
+              type="text"
+              placeholder="Your name"
+              value={waitlist.name}
+              onChange={(e) => setWaitlist((prev) => ({ ...prev, name: e.target.value }))}
+            />
+            <input
+              type="email"
+              placeholder="Your email"
+              value={waitlist.email}
+              onChange={(e) => setWaitlist((prev) => ({ ...prev, email: e.target.value }))}
+            />
+            <button className="button button-green" type="submit">Join the Waitlist</button>
+          </form>
+
+          <div className="waitlist-note">
+            Current version: demo form only. Next step is connecting this to Formspree, Tally, or Google Forms for real email collection.
           </div>
         </div>
       </section>
