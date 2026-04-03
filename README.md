@@ -7,11 +7,11 @@ Web app that turns golf simulator numbers into simple explanations, swing insigh
 This version includes:
 - driver-only analyzer
 - current driver setup inputs
-- shaft stiffness, shaft weight, and grip size context
-- analyze button now triggers the result set
+- head loft, current loft setting, and hosel setting
+- deeper shaft recommendation direction
+- analyze button triggers the result set
 - green-branded design update
 - logo in header and browser tab
-- waitlist section and demo form
 
 ## Run locally
 

@@ -21,6 +21,9 @@ export default function App() {
 
   const [equipmentForm, setEquipmentForm] = useState({
     driverBrand: 'TaylorMade',
+    driverHeadLoft: '10.5',
+    currentLoftSetting: '10.5',
+    hoselSetting: 'Standard',
     shaftModel: 'Fujikura Ventus Blue',
     shaftStiffness: 'Regular',
     shaftWeight: '55',
@@ -29,6 +32,9 @@ export default function App() {
 
   const [submittedEquipmentForm, setSubmittedEquipmentForm] = useState({
     driverBrand: 'TaylorMade',
+    driverHeadLoft: '10.5',
+    currentLoftSetting: '10.5',
+    hoselSetting: 'Standard',
     shaftModel: 'Fujikura Ventus Blue',
     shaftStiffness: 'Regular',
     shaftWeight: '55',
@@ -89,6 +95,9 @@ export default function App() {
     const shaftStiffness = submittedEquipmentForm.shaftStiffness;
     const gripSize = submittedEquipmentForm.gripSize;
     const driverBrand = submittedEquipmentForm.driverBrand.trim();
+    const driverHeadLoft = number(submittedEquipmentForm.driverHeadLoft);
+    const currentLoftSetting = submittedEquipmentForm.currentLoftSetting.trim();
+    const hoselSetting = submittedEquipmentForm.hoselSetting.trim();
     const shaftModel = submittedEquipmentForm.shaftModel.trim();
     const smashValue = clubSpeed > 0 ? ballSpeed / clubSpeed : 0;
     const smash = smashValue.toFixed(2);
@@ -115,6 +124,7 @@ export default function App() {
     const videoLinks = [];
     const equipmentFindings = [];
     const equipmentSuggestions = [];
+    let shaftRecommendation = 'No strong shaft change recommendation yet. Keep testing your current setup unless a repeatable pattern shows up.';
     let mainIssue = 'Your driver numbers look fairly balanced.';
     let whyItHappens = 'There is no single major red flag showing up from this data set.';
 
@@ -180,6 +190,7 @@ export default function App() {
         title: 'Check stiffer shaft options',
         why: 'A regular-flex shaft can sometimes add too much dynamic loft or timing inconsistency at higher speeds.'
       });
+      shaftRecommendation = 'A better test direction may be a 60–65g Stiff shaft with a more stable tip section and a mid-low launch / mid-low spin profile. That kind of shaft can help the club feel more stable, tighten face delivery, and potentially lower excess spin.';
     }
 
     if ((shaftStiffness === 'Stiff' || shaftStiffness === 'X-Stiff') && clubSpeed > 0 && clubSpeed < 88) {
@@ -188,6 +199,7 @@ export default function App() {
         title: 'Test a softer shaft profile',
         why: 'A softer profile may help launch and feel if your speed is on the lower side.'
       });
+      shaftRecommendation = 'A better test direction may be a 50–60g Regular shaft with a mid or mid-high launch profile and a smoother overall feel. That type of shaft may help you create speed more easily and launch the ball higher.';
     }
 
     if (shaftWeight > 0 && shaftWeight < 55 && clubSpeed >= 100) {
@@ -196,6 +208,9 @@ export default function App() {
         title: 'Try a slightly heavier shaft',
         why: 'More weight can sometimes improve control and face delivery for faster swingers.'
       });
+      if (shaftRecommendation.startsWith('No strong')) {
+        shaftRecommendation = 'A better test direction may be a 60–65g shaft in the correct flex for your speed, usually with a more stable handle and tip section if your miss is high-spin or timing-based.';
+      }
     }
 
     if (shaftWeight >= 70 && clubSpeed > 0 && clubSpeed < 90) {
@@ -204,6 +219,9 @@ export default function App() {
         title: 'Test a lighter shaft',
         why: 'A lighter shaft may help you create more speed and launch the ball more easily.'
       });
+      if (shaftRecommendation.startsWith('No strong')) {
+        shaftRecommendation = 'A better test direction may be a 50–60g shaft with a smoother feel and mid launch profile. That may help the club feel easier to move and improve speed without forcing the swing.';
+      }
     }
 
     if (gripSize === 'Midsize' && clubSpeed < 85) {
@@ -214,11 +232,35 @@ export default function App() {
       });
     }
 
+    if (clubSpeed >= 105 && shaftStiffness === 'Stiff' && spinRate > 3200) {
+      shaftRecommendation = 'A better test direction may be a 65–70g Stiff or X-Stiff shaft with a firmer tip and lower-spin profile, especially if your transition is aggressive. That type of shaft may help launch control, reduce excess spin, and improve face stability.';
+    }
+
     if (metricStatuses.spinRate === 'high' && metricStatuses.attackAngle === 'low') {
       equipmentSuggestions.push({
         title: 'Lower-spin head check',
         why: 'This can help if spin stays high after improving strike and delivery.'
       });
+    }
+
+    if (driverHeadLoft > 10.5 && launchAngle > 14 && spinRate > 3200) {
+      equipmentFindings.push('Your driver loft may be contributing to higher launch and spin.');
+      equipmentSuggestions.push({
+        title: 'Test a lower loft setting',
+        why: 'A lower loft head or hosel setting may help bring launch and spin down if contact and delivery are reasonable.'
+      });
+    }
+
+    if (driverHeadLoft > 0 && driverHeadLoft < 10 && launchAngle < 10 && attackAngle <= 0) {
+      equipmentFindings.push('Your current loft setup may be too low for how you deliver the driver.');
+      equipmentSuggestions.push({
+        title: 'Test more loft or a higher loft setting',
+        why: 'More loft may help launch and carry if your attack angle is level or downward.'
+      });
+    }
+
+    if (hoselSetting && hoselSetting !== 'Standard') {
+      equipmentFindings.push(`Current hosel setting entered: ${hoselSetting}.`);
     }
 
     if (driverBrand) {
@@ -246,6 +288,10 @@ export default function App() {
       });
     }
 
+    if (shaftRecommendation.startsWith('No strong') && shaftModel) {
+      shaftRecommendation = 'Your current shaft may still be playable, but the next best step is comparing it against one nearby option in weight or flex to see if control, launch, or spin improves.';
+    }
+
     const uniqueVideos = [];
     const seen = new Set();
     for (const item of videoLinks) {
@@ -267,6 +313,9 @@ export default function App() {
 
     const equipmentSummary = [
       { label: 'Driver Brand', value: driverBrand || '—' },
+      { label: 'Head Loft', value: driverHeadLoft ? `${driverHeadLoft}°` : '—' },
+      { label: 'Current Loft Setting', value: currentLoftSetting || '—' },
+      { label: 'Hosel Setting', value: hoselSetting || '—' },
       { label: 'Shaft Model', value: shaftModel || '—' },
       { label: 'Shaft Stiffness', value: shaftStiffness || '—' },
       { label: 'Shaft Weight', value: shaftWeight ? `${shaftWeight} g` : '—' },
@@ -275,12 +324,13 @@ export default function App() {
 
     return {
       smash,
+      shaftRecommendation,
       mainIssue,
       whyItHappens,
       issues: issues.slice(0, 4),
       actionPlan: actionPlan.slice(0, 4),
       videoLinks: uniqueVideos.slice(0, 3),
-      equipmentFindings: equipmentFindings.slice(0, 5),
+      equipmentFindings: equipmentFindings.slice(0, 6),
       equipmentSuggestions: equipmentSuggestions.slice(0, 4),
       metricsSummary,
       equipmentSummary
@@ -336,10 +386,10 @@ export default function App() {
       <section className="hero container">
         <div className="hero-grid">
           <div>
-            <div className="pill">⛳ Driver-only MVP with swing numbers plus equipment fit context</div>
+            <div className="pill">⛳ Driver-only MVP with swing numbers, loft settings, and equipment fit context</div>
             <h1>Understand your driver numbers and how your setup may affect them.</h1>
             <p className="hero-copy">
-              SimSense Golf now lets golfers enter driver data plus their current driver head, shaft, and grip setup.
+              SimSense Golf lets golfers enter driver data plus their current driver head, loft, hosel, shaft, and grip setup.
               That helps the app give better feedback on whether the issue looks more swing-related, fit-related, or both.
             </p>
             <div className="button-row">
@@ -350,7 +400,7 @@ export default function App() {
             <div className="stat-grid">
               <StatCard value="Driver only" label="Focused MVP" />
               <StatCard value="Numbers + fit" label="More useful feedback" />
-              <StatCard value="Next steps" label="Drills and gear ideas" />
+              <StatCard value="Loft + hosel" label="Setup-aware suggestions" />
             </div>
           </div>
 
@@ -391,7 +441,7 @@ export default function App() {
       <section id="how-it-works" className="container section">
         <div className="three-col">
           <InfoCard icon="1" title="Enter driver numbers" text="Use your driver data from TrackMan, GCQuad, Foresight, or another simulator." />
-          <InfoCard icon="2" title="Add your current setup" text="Include driver brand, shaft model, shaft stiffness, shaft weight, and grip size." />
+          <InfoCard icon="2" title="Add your current setup" text="Include driver head loft, current loft setting, hosel setting, shaft model, shaft stiffness, shaft weight, and grip size." />
           <InfoCard icon="3" title="See swing and fit feedback" text="Get a simple summary of what the numbers say and whether your setup may be part of it." />
         </div>
       </section>
@@ -399,8 +449,8 @@ export default function App() {
       <section id="mvp" className="container section">
         <div className="section-head">
           <div className="eyebrow">Driver analyzer</div>
-          <h2>Working driver-only MVP with equipment context</h2>
-          <p>Enter your driver numbers and current setup to get a clearer diagnosis, simpler explanations, and more useful fit suggestions.</p>
+          <h2>Working driver-only MVP with deeper equipment context</h2>
+          <p>Enter your driver numbers and current setup to get a clearer diagnosis, simpler explanations, loft/hosel context, and more detailed shaft recommendations.</p>
         </div>
 
         <div className="app-grid">
@@ -435,6 +485,32 @@ export default function App() {
                   <div className="input-help">Brand or model family of the head you use now.</div>
                   <div className="input-row">
                     <input value={equipmentForm.driverBrand} onChange={(e) => setEquipmentValue('driverBrand', e.target.value)} />
+                  </div>
+                </label>
+
+                <label className="input-card full-width">
+                  <div className="input-label">Driver Head Loft</div>
+                  <div className="input-help">Stamped loft on the head, such as 9.0, 10.5, or 12.0.</div>
+                  <div className="input-row">
+                    <input value={equipmentForm.driverHeadLoft} onChange={(e) => setEquipmentValue('driverHeadLoft', e.target.value)} />
+                    <div className="unit">°</div>
+                  </div>
+                </label>
+
+                <label className="input-card">
+                  <div className="input-label">Current Loft Setting</div>
+                  <div className="input-help">What the club is currently set to play at.</div>
+                  <div className="input-row">
+                    <input value={equipmentForm.currentLoftSetting} onChange={(e) => setEquipmentValue('currentLoftSetting', e.target.value)} />
+                    <div className="unit">°</div>
+                  </div>
+                </label>
+
+                <label className="input-card">
+                  <div className="input-label">Hosel Setting</div>
+                  <div className="input-help">Example: Standard, +1 Upright, Lower, Neutral.</div>
+                  <div className="input-row">
+                    <input value={equipmentForm.hoselSetting} onChange={(e) => setEquipmentValue('hoselSetting', e.target.value)} />
                   </div>
                 </label>
 
@@ -557,15 +633,23 @@ export default function App() {
               </div>
 
               <div className="card">
-                <h3>Fit and equipment suggestions</h3>
-                <div className="stack-sm">
-                  {analysis.equipmentSuggestions.map((item, idx) => (
-                    <div key={idx} className="tile">
-                      <div className="panel-title">{item.title}</div>
-                      <div className="small-text">{item.why}</div>
-                    </div>
-                  ))}
+                <h3>Shaft recommendation</h3>
+                <div className="tile">
+                  <div className="panel-title">Better test direction</div>
+                  <div className="small-text">{analysis.shaftRecommendation}</div>
                 </div>
+              </div>
+            </div>
+
+            <div className="card">
+              <h3>Fit and equipment suggestions</h3>
+              <div className="stack-sm">
+                {analysis.equipmentSuggestions.map((item, idx) => (
+                  <div key={idx} className="tile">
+                    <div className="panel-title">{item.title}</div>
+                    <div className="small-text">{item.why}</div>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -603,17 +687,17 @@ export default function App() {
           <div className="app-grid">
             <div>
               <div className="eyebrow">Why this version is better</div>
-              <h2>Built to test both the swing explanation and the fit-context idea.</h2>
+              <h2>Built to test swing explanation, loft settings, and fit-context together.</h2>
               <p className="hero-copy">
                 This version helps golfers see whether the problem looks mostly like delivery, strike, launch conditions,
-                or whether their current shaft and grip setup may also be worth checking.
+                loft setup, or whether their current shaft and grip setup may also be worth checking.
               </p>
               <div className="stack-sm">
                 {[
                   'Driver-only logic for a cleaner MVP',
                   'Low / good / high feedback on key metrics',
-                  'Current shaft and grip setup included in the analysis',
-                  'Analyze button now triggers the result set'
+                  'Head loft and hosel included in the analysis',
+                  'More detailed shaft recommendation direction'
                 ].map((item) => (
                   <div key={item} className="check-row">
                     <span className="check">✓</span>
@@ -624,10 +708,10 @@ export default function App() {
             </div>
 
             <div className="two-col">
-              <FeatureTile title="Next upgrade" text="Add loft, adjustable hosel setting, and driver head model." />
               <FeatureTile title="Next upgrade" text="Save sessions and compare whether setup changes helped." />
+              <FeatureTile title="Next upgrade" text="Replace search links with your own coaching videos." />
+              <FeatureTile title="Later" text="Add strike location and miss tendency inputs." />
               <FeatureTile title="Later" text="Expand to irons after the driver MVP is validated." />
-              <FeatureTile title="Later" text="Replace search links with your own coaching videos." />
             </div>
           </div>
         </div>
